@@ -15,7 +15,7 @@ async function main() {
     let client;
     try {
         console.log('Trying to connect...')
-        const client = new MongoClient(MONGO_URL);        
+        const client = new MongoClient(MONGO_URL);
         const db = client.db(DABASE_NAME);
         console.log("Successfully connected to MongoDB.");
         const contacts = db.collection(collection);

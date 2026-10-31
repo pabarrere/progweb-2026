@@ -1,28 +1,35 @@
 import express from 'express';
+import morgan  from 'morgan';
+import path    from 'path';
 
-const host = 'localhost';
-const port = 8080;
+process.loadEnvFile('.env');
+
+const HOST = process.env.HOST;
+const PORT = process.env.PORT;
 
 const app = express();
 
 app.set('view engine', 'ejs');
+app.set('views', path.join('src', 'views'));
 
-app.get('/', function(req, res) {
+app.use(morgan('combined'));
+
+app.get('/', (req, res) => {
     res.send('Hello !');
 });
 
-app.get('/home', function(req, res) {
+app.get('/home', (req, res) => {
   res.send('Maison :-)');
 });
 
-app.get('/user/:uid', function(req, res) {
+app.get('/user/:uid', (req, res) => {
   res.render('user', {uid: req.params.uid});
 });
 
-app.use(function(req, res){
+app.use((req, res) => {
   res.status(404).send('Page introuvable !');
 });
 
-app.listen(port, host, () => {
-    console.log(`Server is running on http://${host}:${port}`)
+app.listen(PORT, HOST, () => {
+    console.log(`Server is running on http://${HOST}:${PORT}`)
 });

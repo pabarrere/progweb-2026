@@ -1,0 +1,157 @@
+openapi: 3.0.3
+
+info:
+  title: TP4 - API de gestion de contacts
+  description: API REST pour gérer un carnet d'adresses
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080
+    description: Serveur local de développement
+
+tags:
+  - name: Contacts
+    description: Opérations sur les contacts
+
+paths:
+  /contacts:
+    get:
+      tags:
+        - Contacts
+      summary: Récupérer tous les contacts
+      responses:
+        '200':
+          description: Liste des contacts récupérée
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Contact'
+        '500':
+          description: Erreur interne du serveur
+
+    post:
+      tags:
+        - Contacts
+      summary: Créer un contact
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NouveauContact'
+            example:
+              name: Alice
+              age: 25
+      responses:
+        '201':
+          description: Contact créé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contact'
+        '400':
+          description: Données invalides
+        '404':
+          description: Contact introuvable
+        '500':
+          description: Erreur interne du serveur
+
+  /contacts/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: Identifiant MongoDB du contact
+        schema:
+          type: string
+    get:
+      tags:
+        - Contacts
+      summary: Récupérer un contact par son identifiant
+      responses:
+        '200':
+          description: Contact trouvé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contact'
+        '400':
+          description: ID invalide
+        '404':
+          description: Contact introuvable
+        '500':
+          description: Erreur interne du serveur
+
+    put:
+      tags:
+        - Contacts
+      summary: Modifier un contact
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NouveauContact'
+      responses:
+        '200':
+          description: Contact modifié
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contact'
+        '400':
+          description: Données invalides
+        '404':
+          description: Contact introuvable
+        '500':
+          description: Erreur interne du serveur
+
+    delete:
+      tags:
+        - Contacts
+      summary: Supprimer un contact
+      responses:
+        '204':
+          description: Contact supprimé
+        '400':
+          description: Données invalides
+        '404':
+          description: Contact introuvable
+        '500':
+          description: Erreur interne du serveur
+
+components:
+  schemas:
+    NouveauContact:
+      type: object
+      required:
+        - name
+        - age
+      properties:
+        name:
+          type: string
+          example: Alice
+        age:
+          type: integer
+          minimum: 0
+          example: 25
+
+    Contact:
+      type: object
+      required:
+        - name
+        - age
+      properties:
+        _id:
+          type: string
+          description: Identifiant généré par MongoDB
+          example: 671a12bc34de567890123456
+        name:
+          type: string
+          example: Alice
+        age:
+          type: integer
+          minimum: 0
+          example: 25

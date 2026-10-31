@@ -1,2 +1,165 @@
+@HOST    = {{$dotenv HOST}}
+@PORT    = {{$dotenv PORT}}
+@baseURL = http://{{HOST}}:{{PORT}}
+
+#== DataBase Initialization ===================#
+
+### Adding contact Toto
+POST {{baseURL}}/contacts
+Content-Type: application/json
+
+{
+    "name": "toto",
+    "age": 24
+}
+
+### Adding contact Titi
+POST {{baseURL}}/contacts
+Content-Type: application/json
+
+{
+    "name": "titi",
+    "age": 25
+}
+
+### Adding contact Tutu
+POST {{baseURL}}/contacts
+Content-Type: application/json
+
+{
+    "name": "tutu",
+    "age": 25
+}
+
+### Adding contact Tata
+POST {{baseURL}}/contacts
+Content-Type: application/json
+
+{
+    "name": "tata",
+    "age": 28
+}
+
+### Adding contact Tonton
+POST {{baseURL}}/contacts
+Content-Type: application/json
+
+{
+    "name": "tonton",
+    "age": 51
+}
+
+### Adding contact Tyty
+POST {{baseURL}}/contacts
+Content-Type: application/json
+
+{
+    "name": "tyty",
+    "age": 5
+}
+
+#== Tests =====================================#
+
 ### Default URL
-GET http://localhost:8080/
+GET {{baseURL}}/
+
+###
+
+### TEST: Home page
+GET {{baseURL}}/home/
+
+###
+
+### TEST: User page
+GET {{baseURL}}/user/test
+
+###
+
+### TEST: Contacts page
+GET {{baseURL}}/contacts
+
+###
+
+### TEST: Incorrect Contact page
+GET {{baseURL}}/contacts/polokus
+
+###
+
+### TEST: Contact Tata page
+GET {{baseURL}}/contacts/6ae6389163c6130a7d99be3f
+
+###
+
+### TEST: Adding contact Tintin
+POST {{baseURL}}/contacts
+Content-Type: application/json
+
+{
+    "name": "tintin",
+    "age": 25
+}
+
+### Newly added Contact Tintin page
+GET {{baseURL}}/contacts/6ae63946e2f421f82a26358a
+
+### Deleting contact Tintin
+DELETE {{baseURL}}/contacts/6ae63946e2f421f82a26358a
+
+### Check that tintin is missing
+GET {{baseURL}}/contacts
+
+###
+
+### TEST: Changing tyty's name and age
+PUT {{baseURL}}/contacts/6ae6389f63c6130a7d99be41
+Content-Type: application/json
+
+{
+    "name": "toutou",
+    "age": 8
+}
+
+### See Contacts page
+GET {{baseURL}}/contacts
+
+### Restoring Tyty
+PUT {{baseURL}}/contacts/6ae6389f63c6130a7d99be41
+Content-Type: application/json
+
+{
+    "name": "tyty",
+    "age": 5
+}
+
+### See Contacts page
+GET {{baseURL}}/contacts
+
+#== Cleaning DataBase =========================#
+
+### Deleting contact Toto
+DELETE {{baseURL}}/contacts/6ae6388863c6130a7d99be3c
+
+###
+
+### Deleting contact Titi
+DELETE {{baseURL}}/contacts/6ae6388f63c6130a7d99be3d
+
+###
+
+### Deleting contact Tutu
+DELETE {{baseURL}}/contacts/6ae6389063c6130a7d99be3e
+
+###
+
+### Deleting contact Tata
+DELETE {{baseURL}}/contacts/6ae6389163c6130a7d99be3f
+
+###
+
+### Deleting contact Tonton
+DELETE {{baseURL}}/contacts/6ae6389d63c6130a7d99be40
+
+###
+
+### Deleting contact Tyty
+DELETE {{baseURL}}/contacts/6ae6389f63c6130a7d99be41

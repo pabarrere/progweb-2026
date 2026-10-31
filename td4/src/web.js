@@ -5,7 +5,7 @@ const port = 8080;
 
 const server = createServer();
 
-server.on('request', function(req, res) {
+server.on('request', (req, res) => {
   res.statusCode = 200;
   res.setHeader('Content-Type', 'text/plain');
   res.end('Salut tout le monde !\n');
