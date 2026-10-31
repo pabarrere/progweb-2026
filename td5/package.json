@@ -10,5 +10,8 @@
     "morgan": "^1.12.1",
     "swagger-jsdoc": "^6.3.0",
     "swagger-ui-express": "^5.0.1"
+  },
+  "scripts": {
+    "start": "node src/server.js"
   }
 }

@@ -1,5 +1,98 @@
-### Default URL
-GET http://localhost:5000/
+@HOST    = {{$dotenv HOST}}
+@PORT    = {{$dotenv PORT}}
+@baseURL = http://{{HOST}}:{{PORT}}
 
-### Default API URL
-GET http://localhost:5000/api/
+#== Tests =====================================#
+
+### TEST: Default URL
+GET {{baseURL}}/
+
+### TEST: Default API URL
+GET {{baseURL}}/api/
+
+### TEST: Register user milou
+POST http://localhost:5000/api/auth/register
+Content-Type: application/json
+
+{
+    "email": "milou@haddock.com",
+    "password": "gregerge"
+}
+
+### TEST: Login user milou
+POST http://localhost:5000/api/auth/login
+Content-Type: application/json
+
+{
+    "email": "milou@haddock.com",
+    "password": "gregerge"
+}
+
+### TEST: Get all contacts
+GET {{baseURL}}/api/contacts
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhZTYyZjg0OWQ1MWM3YzU0MjhhMjE4NiIsImlhdCI6MTc5MzQ3MTA0NiwiZXhwIjoxNzkzNDc0NjQ2fQ.e76qBXFSIeY-TnpIlNCxThVOjfYxbtAGGA3C9xPOKHE
+
+### TEST: Try to get contacts without the token
+GET {{baseURL}}/api/contacts
+
+### TEST: Get an unknown contact
+GET {{baseURL}}/api/contacts/polokus
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhZTYyZjg0OWQ1MWM3YzU0MjhhMjE4NiIsImlhdCI6MTc5MzQ3MTA0NiwiZXhwIjoxNzkzNDc0NjQ2fQ.e76qBXFSIeY-TnpIlNCxThVOjfYxbtAGGA3C9xPOKHE
+
+### TEST: Add contact johan
+POST {{baseURL}}/api/contacts
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhZTYyZjg0OWQ1MWM3YzU0MjhhMjE4NiIsImlhdCI6MTc5MzQ3MTA0NiwiZXhwIjoxNzkzNDc0NjQ2fQ.e76qBXFSIeY-TnpIlNCxThVOjfYxbtAGGA3C9xPOKHE
+Content-Type: application/json
+
+{
+    "name": "johan",
+    "age": 25
+}
+
+### TEST: Change nothing about johan (unwanted)
+PUT {{baseURL}}/api/contacts/6ae4cb639739afbfc794dd66
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhZTYyZjg0OWQ1MWM3YzU0MjhhMjE4NiIsImlhdCI6MTc5MzQ3MTA0NiwiZXhwIjoxNzkzNDc0NjQ2fQ.e76qBXFSIeY-TnpIlNCxThVOjfYxbtAGGA3C9xPOKHE
+Content-Type: application/json
+
+{
+}
+
+### TEST: Change johan's age
+PUT {{baseURL}}/api/contacts/6ae4cb639739afbfc794dd66
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhZTYyZjg0OWQ1MWM3YzU0MjhhMjE4NiIsImlhdCI6MTc5MzQ3MTA0NiwiZXhwIjoxNzkzNDc0NjQ2fQ.e76qBXFSIeY-TnpIlNCxThVOjfYxbtAGGA3C9xPOKHE
+Content-Type: application/json
+
+{
+    "age": 12
+}
+
+### TEST: Change johan's name
+PUT {{baseURL}}/api/contacts/6ae4cb639739afbfc794dd66
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhZTYyZjg0OWQ1MWM3YzU0MjhhMjE4NiIsImlhdCI6MTc5MzQ3MTA0NiwiZXhwIjoxNzkzNDc0NjQ2fQ.e76qBXFSIeY-TnpIlNCxThVOjfYxbtAGGA3C9xPOKHE
+Content-Type: application/json
+
+{
+    "name": "lutin"
+}
+
+### TEST: Recover johan's identity
+PUT {{baseURL}}/api/contacts/6ae4cb639739afbfc794dd66
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhZTYyZjg0OWQ1MWM3YzU0MjhhMjE4NiIsImlhdCI6MTc5MzQ3MTA0NiwiZXhwIjoxNzkzNDc0NjQ2fQ.e76qBXFSIeY-TnpIlNCxThVOjfYxbtAGGA3C9xPOKHE
+Content-Type: application/json
+
+{
+    "name": "johan",
+    "age": 25
+}
+
+### TEST: Get newly created contact johan
+GET {{baseURL}}/api/contacts/6ae4cb639739afbfc794dd66
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhZTYyZjg0OWQ1MWM3YzU0MjhhMjE4NiIsImlhdCI6MTc5MzQ3MTA0NiwiZXhwIjoxNzkzNDc0NjQ2fQ.e76qBXFSIeY-TnpIlNCxThVOjfYxbtAGGA3C9xPOKHE
+
+### TEST: Remove contact johan
+DELETE {{baseURL}}/api/contacts/6ae4cb639739afbfc794dd66
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhZTYyZjg0OWQ1MWM3YzU0MjhhMjE4NiIsImlhdCI6MTc5MzQ3MTA0NiwiZXhwIjoxNzkzNDc0NjQ2fQ.e76qBXFSIeY-TnpIlNCxThVOjfYxbtAGGA3C9xPOKHE
+
+### - Check that the contact was removed
+GET {{baseURL}}/api/contacts
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhZTYyZjg0OWQ1MWM3YzU0MjhhMjE4NiIsImlhdCI6MTc5MzQ3MTA0NiwiZXhwIjoxNzkzNDc0NjQ2fQ.e76qBXFSIeY-TnpIlNCxThVOjfYxbtAGGA3C9xPOKHE
