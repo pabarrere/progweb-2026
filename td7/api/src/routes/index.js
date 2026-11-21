@@ -254,4 +254,3 @@ router.route('/contacts/:id').delete(requireAuth, async (req, res) => {
 });
 
 export default router;
-    

@@ -1,11 +1,110 @@
-###
-GET http://localhost:3000/contacts
+@HOST    = {{$dotenv HOST}}
+@PORT    = {{$dotenv PORT}}
+@baseURL = http://{{HOST}}:{{PORT}}
+
+#== Tests =====================================#
+
+### TEST: Default URL
+GET {{baseURL}}/
 
 ###
-POST http://localhost:3000/contact
+
+@apiURL = {{baseURL}}/api
+
+### TEST: Default API URL
+GET {{apiURL}}/
+
+### TEST: Register user milou
+POST {{apiURL}}/auth/register
 Content-Type: application/json
 
 {
-    "name" : "Alice",
-    "email" : "alice@foo.com"
+    "email": "milou@moulinsart.com",
+    "password": "woof"
 }
+
+### TEST: Login user milou
+POST {{apiURL}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "milou@moulinsart.com",
+    "password": "woof"
+}
+
+###
+
+@milouToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDFhNGYwMDRiMDY5NjZhODIyZjA2YSIsImlhdCI6MTc5NTI2OTg3OCwiZXhwIjoxNzk1MjczNDc4fQ.CER6F8TZBE3sVSqGpl5x9pK3f22Lhd4OvUaAOmeWzfE
+
+### TEST: Get all contacts
+GET {{apiURL}}/contacts
+Authorization: Bearer {{milouToken}}
+
+### TEST: Try to get contacts without the token
+GET {{apiURL}}/contacts
+
+### TEST: Get an unknown contact
+GET {{apiURL}}/contacts/polokus
+Authorization: Bearer {{milouToken}}
+
+### TEST: Add contact pirlouit
+POST {{apiURL}}/contacts
+Authorization: Bearer {{milouToken}}
+Content-Type: application/json
+
+{
+    "name": "pirlouit",
+    "age": 25
+}
+
+###
+
+@pirlouitID = 6b01a62304b06966a822f06b
+
+### TEST: Change nothing about pirlouit (unwanted)
+PUT {{apiURL}}/contacts/{{pirlouitID}}
+Authorization: Bearer {{milouToken}}
+Content-Type: application/json
+
+{
+}
+
+### TEST: Change pirlouit's age
+PUT {{apiURL}}/contacts/{{pirlouitID}}
+Authorization: Bearer {{milouToken}}
+Content-Type: application/json
+
+{
+    "age": 12
+}
+
+### TEST: Change pirlouit's name
+PUT {{apiURL}}/contacts/{{pirlouitID}}
+Authorization: Bearer {{milouToken}}
+Content-Type: application/json
+
+{
+    "name": "lutin"
+}
+
+### TEST: Recover pirlouit's identity
+PUT {{apiURL}}/contacts/{{pirlouitID}}
+Authorization: Bearer {{milouToken}}
+Content-Type: application/json
+
+{
+    "name": "pirlouit",
+    "age": 25
+}
+
+### TEST: Get newly created contact pirlouit
+GET {{apiURL}}/contacts/{{pirlouitID}}
+Authorization: Bearer {{milouToken}}
+
+### TEST: Remove contact pirlouit
+DELETE {{apiURL}}/contacts/{{pirlouitID}}
+Authorization: Bearer {{milouToken}}
+
+### - Check that the contact was removed
+GET {{apiURL}}/contacts
+Authorization: Bearer {{milouToken}}

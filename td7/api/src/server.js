@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import express from 'express';
 import morgan from 'morgan'
 
@@ -6,8 +7,9 @@ import routes from './routes/index.js';
 import swaggerJsDoc from 'swagger-jsdoc';
 import { serve, setup } from 'swagger-ui-express';
 
-const port = 80;
-
+const HOST = process.env.HOST || 'localhost';
+const PORT = process.env.PORT || 5000;
+const API_URL = 'http://' + HOST + ':' + PORT;
 
 const options = {
     definition: {
@@ -37,7 +39,7 @@ const options = {
         },
         servers: [
             {
-                url: `http://localhost:80/api`,
+                url: API_URL,
                 description: 'Development server',
             },
         ],
@@ -61,6 +63,6 @@ app.get('/', function(req, res) {
     res.send('Hello !');
 });
 
-app.listen(port, () => {
-    console.log("Server is running");
+app.listen(PORT, '0.0.0.0', () => {
+    console.log("Server is running on port " + PORT);
 });

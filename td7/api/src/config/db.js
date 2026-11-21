@@ -1,7 +1,7 @@
 import { connect, disconnect } from 'mongoose';
 
 process.loadEnvFile()
-      
+
 async function connectDB() {
     try {
         console.log("Opening connection");
@@ -10,7 +10,7 @@ async function connectDB() {
             //useUnifiedTopology: true,
         });
         console.log(`MongoDB Connected: ${conn.connection.host}`);
-    } catch(err) { 
+    } catch(err) {
         disconnect();
         console.error(err);
         process.exit(1);
