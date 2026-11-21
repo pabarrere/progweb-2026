@@ -1,0 +1,17 @@
+FROM node:25-alpine AS builder
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+RUN mkdir -p ./dist && npm run build
+
+FROM node:25-alpine
+WORKDIR /app
+COPY --from=builder /app/package*.json .
+RUN npm ci --omit=dev
+COPY --from=builder /app/dist ./dist
+COPY .env /app/.env
+
+EXPOSE 80
+
+CMD ["node", "dist/app.bundle.min.cjs"]

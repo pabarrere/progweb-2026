@@ -1,0 +1,341 @@
+
+__Cours sur Docker__
+
+Docker permet d'exécuter une application dans un conteneur indépendant des machines
+sur lesquelles elle a été développée, avec son propre environnement de travail.
+Cela permet de lancer l'application depuis n'importe quelle machine équipée de Docker,
+la rendant portable sur de nombreux environnements différents.
+Docker partage tout de même le noyau du Système d'Exploitation la machine hôte.
+
+Son Image est un modèle immuable servant à créer des conteneurs.
+Un conteneur est instance en cours d'exécution d'une image.
+
+.Configurer le Docker :
+    Dockerfile (Automatise la création d'image) :
+        FROM:       Débute une nouvelle étape de construction (stage) depuis une base
+        WORKDIR:    Répertoire de travail
+        ENV:        Définit des variables d'environnement
+        ARG:        Définit des variables pour la construction de l'image
+        COPY:       Copie des fichiers de la machine vers l'image
+        RUN:        Lance une commande et crée une nouvelle image en résultant
+        CMD:        Commande exécutée par défaut au lancement du conteneur
+        EXPOSE:     Ports réseau à écouter à l'exécution (documentation !)
+
+.Créer l'image immuable :
+    > docker build -t <name> .
+        -t : tag
+        .  : chemin du build context du docker
+
+.Ignorer des dossiers/fichiers :
+    .dockerignore
+
+.Lister les images :
+    > docker images
+
+.Supprimer une image :
+    > docker rmi <imgID>
+
+\\\ Comparaison de la taille des images avant et après .dockerignore ----------
+
+REPOSITORY   TAG       IMAGE ID       CREATED         SIZE
+web          latest    487e1426b719   2 seconds ago   167MB
+bigweb       latest    06975bb95249   3 minutes ago   170MB
+
+\\\ ---------------------------------------------------------------------------
+
+.Lancer un conteneur à partir d'une image :
+    > docker run -d \
+        -p 8090:80 \
+        --name <name> \
+        --network <nw> \
+        -e <var>=<val> \
+        <img>
+
+    -d (daemon)      : lance en arrière-plan
+    -p <HOST>:<CONT> : map un port entre la machine HOST et le conteneur CONT
+    --network <nw>   : associe un réseau Docker au conteneur
+    --name <name>    : donner un nom au conteneur
+    -e <var>=<val>   : applique la variable d'environnement var avec la valeur val
+
+.Lister les conteneurs :
+    > docker ps -a
+        -a : liste aussi les conteneurs inactifs
+
+.Interrompre un conteneur :
+    > docker stop <ID>
+
+.Redémarrer un conteneur arrêté :
+    > docker start <ID>
+
+.Redémarrer un conteneur actif ou arrêté :
+    > docker restart <ID>
+
+.Suivre les logs d'un conteneur :
+    > docker logs -f <containerID>
+        -f : en temps réel
+
+.Afficher des informations sur un conteneur :
+    > docker inspect <containerID>
+
+.Supprimer un conteneur arrêté :
+    > docker rm <containerID>
+
+.Récupérer une image depuis un dépôt d'images :
+    > docker pull <img>
+
+.Envoyer une image à un dépôt :
+    > docker push <img>
+
+\\\ Récupération & Lancement de l'image alpine depuis Docker Hub --------------
+
+    > docker pull alpine
+
+Using default tag: latest
+latest: Pulling from library/alpine
+881fc932939e: Already exists
+Digest: sha256:f59abe656b692d901e184be3445e084786602108599d2a51d229c0f5a48c71bf
+Status: Downloaded newer image for alpine:latest
+docker.io/library/alpine:latest
+
+    > docker run -it --rm alpine /bin/sh
+        -it:     session interactive
+            -i (session ouverte)
+            -t (terminal)
+        --rm:    supprime à la fin
+        /bin/sh: commande à exécuter
+
+/ # ls
+bin    etc    lib    mnt    proc   run    srv    tmp    var
+dev    home   media  opt    root   sbin   sys    usr
+/ # cd home/
+/home # ls
+/home # mkdir test
+/home # ls
+test
+/home # cd test/
+/home/test # nano tmp.txt
+/bin/sh: nano: not found
+/home/test # cd ../
+/home # rm -rf test/
+/home # exit
+
+\\\ ---------------------------------------------------------------------------
+
+.Exécuter une commande sur un conteneur actif :
+    > docker exec -it <name/ID> <cmd>
+
+\\\ Changement du texte affiché pendant l'exécution du conteneur --------------
+
+    > docker exec -it ef1796599b6d /bin/sh
+
+/app # ls
+Dockerfile         package-lock.json  rendu
+node_modules       package.json       src
+
+/app # apk update && apk add vim
+fetch https://dl-cdn.alpinelinux.org/alpine/v3.22/main/x86_64/APKINDEX.tar.gz
+fetch https://dl-cdn.alpinelinux.org/alpine/v3.22/community/x86_64/APKINDEX.tar.gz
+v3.22.8-52-g0b68c2e9e47 [https://dl-cdn.alpinelinux.org/alpine/v3.22/main]
+v3.22.8-43-g707d0a6d58d [https://dl-cdn.alpinelinux.org/alpine/v3.22/community]
+OK: 26337 distinct packages available
+(1/5) Installing vim-common (9.1.1566-r0)
+(2/5) Installing xxd (9.1.1566-r0)
+(3/5) Installing ncurses-terminfo-base (6.5_p20250503-r0)
+(4/5) Installing libncursesw (6.5_p20250503-r0)
+(5/5) Installing vim (9.1.1566-r0)
+Executing busybox-1.37.0-r18.trigger
+OK: 39 MiB in 23 packages
+
+/app # vi src/index.js
+app.get('/', (req, res) => {
+    res.send('Bonjour depuis le conteneur !");
+});
+
+/app # exit
+
+\\\ ---------------------------------------------------------------------------
+
+#2 - Bind mounts
+
+Les bind mounts permettent de lier un dossier de la machine hôte avec un
+dossier du conteneur.
+
+Remplacer CMD ["npm", "run", "start"] par CMD ["node", "--watch", "src/index.js"]
+dans Dockerfile permet de lancer le conteneur avec un redémarrage dynamique de
+l'application après modification.
+
+.Partager des données entre l'hôte et le conteneur (bind mounts) :
+    > docker run -d -p 8090:80 -v <hostpath>:<dockerpath> web
+
+\\\ Changement dynamique du texte affiché via bind mounts ---------------------
+
+    > docker run -d -p 8090:80 -v "$(pwd)/src:/app/src" web
+41f66782e3f70adcfe20d5cdffb55fe9ef8525a7e22232e604863c9f45bee8f1
+
+    > docker ps
+        NAMES
+41f66782e3f7   web       "docker-entrypoint.s…"   4 seconds ago   Up 3 seconds   0.0.0.0:8090->80/tcp, :::8090->80/tcp   vigorous_shirley
+
+    > docker exec -it 41f66782e3f7 /bin/sh
+/app # vi src/index.js
+app.get('/', (req, res) => {
+    res.send('Bonjour depuis le conteneur ?!");
+});
+
+    : Le texte a effectivement été changé chez l'hôte.
+    : Changer le texte depuis l'hôte change bien le texte du conteneur
+/app # vi src/index.js
+app.get('/', (req, res) => {
+    res.send('Au revoir depuis le conteneur...");
+});
+
+/app # exit
+
+\\\ ---------------------------------------------------------------------------
+
+#3 - Volumes Docker
+
+Les volumes permettent de partager des données entre le docker et l'hôte en étant
+natifs de Docker, et donc plus portables que les bind mounts. Ils peuvent également
+être associés à plusieurs conteneurs différents.
+
+.Créer un volume :
+    > docker volume create <name>
+
+.Lister les volumes :
+    > docker volume ls
+
+.Supprimer un volume :
+    > docker volume rm <name>
+
+.Inspecter un volume :
+    > docker volume inspect -f <outputFormat> <name>
+        -f : format de sortie (ex: 'json')
+
+.Lancer le conteneur en montant son volume :
+    > docker run -v <volume>:<dockerpath> <img>
+
+
+\\\ Changement dynamique du texte affiché via volumes -------------------------
+
+    > docker volume create web-volume
+web-volume
+
+    > docker volume ls
+DRIVER    VOLUME NAME
+local     web-volume
+
+    > docker volume inspect web-volume
+[
+    {
+        "CreatedAt": "2026-11-21T12:09:46+01:00",
+        "Driver": "local",
+        "Labels": null,
+        "Mountpoint": "/var/lib/docker/volumes/web-volume/_data",
+        "Name": "web-volume",
+        "Options": null,
+        "Scope": "local"
+    }
+]
+
+    > docker run -d \
+        -p 8090:80 \
+        -v "web-volume:/app/src" \
+        web
+5e80c91e799c4ecca016516000684d9d145848008502fd6b193458d999760927
+
+    > docker ps -a
+CONTAINER ID   IMAGE     COMMAND                  CREATED          STATUS         PORTS         NAMES
+5e80c91e799c   web       "docker-entrypoint.s…"   10 seconds ago   Up 9 seconds   0.0.0.0:8090->80/tcp, :::8090->80/tcp   jovial_chandrasekhar
+
+    > docker exec -it 5e80c91e799c /bin/sh
+/app # vi src/index.js (je modifie le texte)
+
+/app # cat /app/src/index.js
+    import express from 'express';
+
+    const app = express();
+    const PORT = 80;
+
+    app.get('/', (req, res) => {
+        res.send('Bonjour volumineux !');
+    });
+
+    app.listen(PORT, () => {
+        console.log(`Server is running on port ${PORT}`);
+    });
+
+/app # exit
+
+    > docker stop 5e80c91e799c && docker rm 5e80c91e799c
+5e80c91e799c
+5e80c91e799c
+
+    > docker ps -a
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+
+    > docker run -d \
+        -p 8090:80 \
+        -v "web-volume:/app/src" \
+        web
+98ca83f7145fff084f8513538695fa9dda99ff51bf53de9201938a47efa22f51
+
+    > docker ps -a
+CONTAINER ID   IMAGE     COMMAND                  CREATED          STATUS          PORTS          NAMES
+98ca83f7145f   web       "docker-entrypoint.s…"   44 seconds ago   Up 43 seconds   0.0.0.0:8090->80/tcp, :::8090->80/tcp   great_driscoll
+
+    > docker exec -it 98ca83f7145f /bin/sh
+/app # cat src/index.js
+    import express from 'express';
+
+    const app = express();
+    const PORT = 80;
+
+    app.get('/', (req, res) => {
+        res.send('Bonjour volumineux !');
+    });
+
+    app.listen(PORT, () => {
+        console.log(`Server is running on port ${PORT}`);
+    });
+
+/app # exit
+
+    : Le volume contient toujours le message modifié.
+    : Contrairement aux bind mounts, modifier l'hôte ne modifie packages
+      directement le volume. C'est un espace persistant à part géré par Docker.
+
+\\\ ---------------------------------------------------------------------------
+
+#4 - Réseau Docker
+
+Un réseau virtuel Docker permet à différents conteneurs de communiquer entre eux
+en utilisant leurs noms.
+
+.Créer un réseau :
+    > docker network create <name>
+
+.Lister les réseaux :
+    > docker network ls
+
+
+#5 - Docker Compose
+
+Docker Compose permet de construire plusieurs dockers liés dans le bon ordre et
+avec les bonnes configurations, gérant ainsi plusieurs dockers en même temps.
+
+.Construire/Reconstruire les images Docker du docker-compose.yml :
+    > docker compose -f <configFile> build --no-cache
+        -f <configFile> : compose.yaml file
+        --no-cache      : ignore le cache des couches de construction.
+
+.Démarrer les services du docker-compose.yml :
+    > docker compose -f <configFile> up -d
+        -d : "detached", les conteneurs tournent en arrière-plan.
+
+.Lister tous les conteneurs associés au docker-compose.yml :
+    > docker compose -f <configFile> ps
+
+.Arrêter et supprimer les conteneurs et réseaux du docker-compose.yml :
+    > docker compose -f <configFile> down -v
+        -v : demande également la suppression des volumes nommés associés.

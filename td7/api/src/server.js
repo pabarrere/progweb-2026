@@ -8,7 +8,7 @@ import swaggerJsDoc from 'swagger-jsdoc';
 import { serve, setup } from 'swagger-ui-express';
 
 const HOST = process.env.HOST || 'localhost';
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 80;
 const API_URL = 'http://' + HOST + ':' + PORT;
 
 const options = {
@@ -64,5 +64,5 @@ app.get('/', function(req, res) {
 });
 
 app.listen(PORT, '0.0.0.0', () => {
-    console.log("Server is running on port " + PORT);
+    console.log("Container Server is running on port " + PORT);
 });

@@ -34,16 +34,16 @@ Content-Type: application/json
 
 ###
 
-@milouToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDFhNGYwMDRiMDY5NjZhODIyZjA2YSIsImlhdCI6MTc5NTI2OTg3OCwiZXhwIjoxNzk1MjczNDc4fQ.CER6F8TZBE3sVSqGpl5x9pK3f22Lhd4OvUaAOmeWzfE
+@milouToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDFkNGFmNmFiMTFjNDY4MmQ2YTJiNiIsImlhdCI6MTc5NTI4MjA5OSwiZXhwIjoxNzk1Mjg1Njk5fQ.BcBB_Iw5wtLiMFKnUYX_y_nh8807KevnQ28P6ij1s6Y
 
 ### TEST: Get all contacts
 GET {{apiURL}}/contacts
 Authorization: Bearer {{milouToken}}
 
-### TEST: Try to get contacts without the token
+### CRASHTEST: Try to get contacts without the token
 GET {{apiURL}}/contacts
 
-### TEST: Get an unknown contact
+### CRASHTEST: Get an unknown contact
 GET {{apiURL}}/contacts/polokus
 Authorization: Bearer {{milouToken}}
 
@@ -59,9 +59,9 @@ Content-Type: application/json
 
 ###
 
-@pirlouitID = 6b01a62304b06966a822f06b
+@pirlouitID = 6b01d4d36ab11c4682d6a2b7
 
-### TEST: Change nothing about pirlouit (unwanted)
+### TEST: Change nothing about pirlouit
 PUT {{apiURL}}/contacts/{{pirlouitID}}
 Authorization: Bearer {{milouToken}}
 Content-Type: application/json
