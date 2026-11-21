@@ -1,0 +1,47 @@
+
+__Cours sur Docker__
+
+Docker permet d'exécuter une application dans un conteneur indépendant des machines
+sur lesquelles elle a été développée, avec son propre environnement de travail.
+Cela permet de lancer l'application depuis n'importe quelle machine équipée de Docker,
+la rendant portable sur de nombreux environnements différents.
+
+.Configurer le Docker :
+    Dockerfile (Automatise la création d'image) :
+        FROM:       Débute une nouvelle étape de construction depuis une base
+        WORKDIR:    Répertoire de travail
+        COPY:       Copie des fichiers de la machine vers l'image
+        RUN:        Lance une commande et crée une nouvelle image en résultant
+        CMD:        Commande exécutée par défaut au lancement du conteneur
+        EXPOSE:     Ports réseau à écouter à l'exécution
+
+.Créer l'image immuable :
+    > docker build -t name .
+        -t : tag
+        .  : chemin depuis lequel créer l'image
+
+.Ignorer des dossiers/fichiers :
+    .dockerignore
+
+.Lister les images :
+    > docker images
+
+\\\ Comparaison de la taille des images avant et après ajout du .dockerignore :
+
+REPOSITORY   TAG       IMAGE ID       CREATED         SIZE
+web          latest    487e1426b719   2 seconds ago   167MB
+bigweb       latest    06975bb95249   3 minutes ago   170MB
+
+\\\ ---------------------------------------------------------------------------
+
+.Lancer un conteneur à partir d'une image :
+    > docker run -d -p 8090:80 web
+        -d (daemon)      : lance en arrière-plan
+        -p <DOCK>:<HOST> : map un port entre HOST et DOCK
+
+.Lister les conteneurs :
+    > docker ps
+
+.Interrompre un conteneur :
+    > docker stop <ID>
+
