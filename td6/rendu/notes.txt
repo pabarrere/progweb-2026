@@ -290,3 +290,6 @@ CONTAINER ID   IMAGE     COMMAND                  CREATED          STATUS       
       directement le volume. C'est un espace persistant à part géré par Docker.
 
 \\\ ---------------------------------------------------------------------------
+
+Conclusion :
+Les Docker, il faut savoir les manipuler, mais niveau portabilité c'est sympa !
