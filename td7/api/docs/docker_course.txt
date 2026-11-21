@@ -339,3 +339,30 @@ avec les bonnes configurations, gérant ainsi plusieurs dockers en même temps.
 .Arrêter et supprimer les conteneurs et réseaux du docker-compose.yml :
     > docker compose -f <configFile> down -v
         -v : demande également la suppression des volumes nommés associés.
+
+
+#6 - Cache Redis
+
+Permet de garder des données à portée de main pour ne pas avoir à les recréer.
+Lorsque'un cache est sollicité, il y a deux options :
+    Cache HIT  : les données sont présentes dans Redis. Elles sont renvoyées.
+    Cache MISS : les données ne sont pas présentes dans Redis. Il faut les créer.
+
+\\\ Get contacts twice with cache ---------------------------------------------
+
+    ### TEST: Get all contacts
+    GET {{apiURL}}/contacts
+    Authorization: Bearer {{milouToken}}
+
+CACHE MISS: contacts:all
+GET /api/contacts 200 2008.126 ms - 38
+
+    ### TEST: Get all contacts again, with cache
+    GET {{apiURL}}/contacts
+    Authorization: Bearer {{milouToken}}
+
+CACHE HIT: contacts:all
+GET /api/contacts 200 2.313 ms - 38
+
+\\\ ---------------------------------------------------------------------------
+

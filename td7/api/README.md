@@ -40,10 +40,19 @@ docker compose -f compose.dev.yaml build --no-cache
 ```sh
 docker compose -f compose.dev.yaml up -d
 ```
+OR only build MongoDB and Redis containers and run server in the terminal :
+```sh
+docker compose -f compose.dev.yaml up -d mongodb redis
+npm run dev
+```
 
 #### Check containers :
 ```sh
-docker compose -f compose.dev.yaml ps
+docker compose -f compose.dev.yaml ps -a
+```
+OR
+```sh
+docker ps -a
 ```
 
 #### Delete dev containers, networks & volumes :

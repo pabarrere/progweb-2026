@@ -3,6 +3,7 @@ import express from 'express';
 import morgan from 'morgan'
 
 import connectDB from "./config/db.js";
+import redisClient from './config/redis.js';
 import routes from './routes/index.js';
 import swaggerJsDoc from 'swagger-jsdoc';
 import { serve, setup } from 'swagger-ui-express';
@@ -47,12 +48,23 @@ const options = {
     apis: ["./src/routes/*.js"],
 }
 
-
-
 const app = express();
 app.use(morgan('dev'))
 app.use(express.json());
-connectDB();
+
+async function startServer() {
+    try {
+        await connectDB();
+        await redisClient.connect();
+
+        app.listen(PORT, '0.0.0.0', () => {
+            console.log("Container Server is running on port " + PORT);
+        });
+    } catch (err) {
+        console.error('Startup error:', err);
+        process.exit(1);
+    }
+} startServer();
 
 const openapiSpecification = swaggerJsDoc(options);
 app.use('/docs', serve, setup(openapiSpecification));
@@ -61,8 +73,4 @@ app.use('/api', routes);
 
 app.get('/', function(req, res) {
     res.send('Hello !');
-});
-
-app.listen(PORT, '0.0.0.0', () => {
-    console.log("Container Server is running on port " + PORT);
 });

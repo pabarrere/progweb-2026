@@ -34,9 +34,13 @@ Content-Type: application/json
 
 ###
 
-@milouToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDFkNGFmNmFiMTFjNDY4MmQ2YTJiNiIsImlhdCI6MTc5NTI4MjA5OSwiZXhwIjoxNzk1Mjg1Njk5fQ.BcBB_Iw5wtLiMFKnUYX_y_nh8807KevnQ28P6ij1s6Y
+@milouToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDFkZjMwMjU1YzExMTFkMjEzZDg0YSIsImlhdCI6MTc5NTI4NDc4NiwiZXhwIjoxNzk1Mjg4Mzg2fQ.7tHUx4qlsWTBs_URP6QDUOHOfZ1uH6MtRA43qtY8pOU
 
 ### TEST: Get all contacts
+GET {{apiURL}}/contacts
+Authorization: Bearer {{milouToken}}
+
+### TEST: Get all contacts again, with cache
 GET {{apiURL}}/contacts
 Authorization: Bearer {{milouToken}}
 
