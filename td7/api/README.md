@@ -43,7 +43,13 @@ docker compose -f compose.dev.yaml up -d
 OR only build MongoDB and Redis containers and run server in the terminal :
 ```sh
 docker compose -f compose.dev.yaml up -d mongodb redis
+cd api/
 npm run dev
+```
+And to build & run frontend only :
+```sh
+cd ..
+docker compose -f compose.dev.yaml up --build -d frontend
 ```
 
 #### Check containers :
