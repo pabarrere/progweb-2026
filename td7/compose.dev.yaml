@@ -1,7 +1,7 @@
 services:
   api:
     build:
-      context: .
+      context: ./api
       dockerfile: Dockerfile
     ports:
       - "3000:80"
@@ -11,7 +11,7 @@ services:
       - DB_NAME=td7
       - REDIS_URL=redis://redis:6379
     volumes:
-      - ./src:/app/src
+      - ./api/src:/app/src
     depends_on:
       - mongodb
       - redis
@@ -25,6 +25,19 @@ services:
     volumes:
       - ./frontend:/app
       - /app/node_modules
+
+  reverse-proxy:
+    restart: always
+    build:
+      context: reverse-proxy/
+      dockerfile: ./Dockerfile.dev
+    depends_on:
+      - api
+      - frontend
+    volumes:
+      - ./reverse-proxy/log:/var/log/nginx
+    ports:
+      - 80:80
 
   mongodb:
     image: mongo:8.0

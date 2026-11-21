@@ -1,10 +1,10 @@
 services:
   api:
     build:
-      context: .
+      context: ./api
       dockerfile: Dockerfile.prod
-    ports:
-      - "3000:80"
+    expose:
+      - "80"
     environment:
       - PORT=80
       - MONGO_URI=mongodb://mongodb:27017
@@ -14,10 +14,28 @@ services:
       - mongodb
       - redis
 
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    expose:
+      - "80"
+
+  reverse-proxy:
+    restart: always
+    build:
+      context: reverse-proxy/
+      dockerfile: ./Dockerfile.dev
+    depends_on:
+      - api
+      - frontend
+    volumes:
+      - ./reverse-proxy/log:/var/log/nginx
+    ports:
+      - 80:80
+
   mongodb:
     image: mongo:8.0
-    ports:
-      - "27018:27017"
     environment:
       - MONGO_INITDB_DATABASE=td7
     volumes:
@@ -25,8 +43,6 @@ services:
 
   redis:
     image: redis:8-alpine
-    ports:
-      - "6380:6379"
 
 volumes:
   mongodb_data:

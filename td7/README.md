@@ -65,3 +65,14 @@ docker ps -a
 ```sh
 docker compose -f compose.dev.yaml down -v
 ```
+
+### Launch everything in a single page using Nginx proxy
+```sh
+docker compose -f compose.dev.yaml build --no-cache
+docker compose -f compose.dev.yaml up -d
+```
+Go to frontend :
+    http://localhost/
+
+Go to API :
+    http://localhost/api/
